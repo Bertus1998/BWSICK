@@ -4,31 +4,55 @@ import java.util.ArrayList;
 
 public class Neuron {
 
-    static float bias = 1;
-
+    float bias = 1;
     ArrayList<Synapse> prevNeurons;
     ArrayList<Synapse> nextNeurons;
-    float value;
+
+    // FORWARD PROPAGATION
+    float sum;
+    float biasedSum;
+    float activatedSum;
+
+
+    // BACKWARD PROPAGATION
+    float error;
+    float activatedSumDerived;
+    float sumOfInputWeights;
 
     public Neuron() {
         prevNeurons = new ArrayList<>();
         nextNeurons = new ArrayList<>();
-        value = 0;
+        sum = 0;
     }
+
+    // FORWARD PROPAGATION
 
     // Applies bias to summed value
     public void ApplyBias() {
-        value += bias;
+        biasedSum = sum + bias;
     }
     // Activates value
     public void ActivateValue() {
-        value = Sigmoid();
+        activatedSum = Sigmoid();
     }
     // Passes value
     public void PassValue() {
-        for (Synapse s : nextNeurons)
-        {
+        for (Synapse s : nextNeurons) {
             s.PassValue();
+        }
+    }
+
+
+    // BACKWARD PROPAGATION
+
+    // Calculates error
+    public void CalculateError_Output(float expectedValue) {
+        activatedSumDerived = activatedSum * (1 - activatedSum);
+        error = (expectedValue - activatedSum) * activatedSumDerived;
+    }
+    public void PassError(float learningRate) {
+        for (Synapse s : prevNeurons) {
+            s.PassError(error, learningRate);
         }
     }
 
@@ -37,6 +61,6 @@ public class Neuron {
 
     // Activation function
     float Sigmoid() {
-        return (float)(1.0 / (1.0 + Math.exp(-value)));
+        return (float)(1.0 / (1.0 + Math.exp(-biasedSum)));
     }
 }

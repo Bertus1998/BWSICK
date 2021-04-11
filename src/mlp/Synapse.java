@@ -7,6 +7,8 @@ public class Synapse {
     public Neuron inputNeuron;      // Reference to neuron that provides data
     public Neuron outputNeuron;     // Reference to neuron data has to be passed to
     public float weight;            // Weight of the synapse
+    public float passedValue;       // Value that was passed
+    public float error;             // error
 
     // Constructor that initiates weight with random value and assigns values to input and output
     public Synapse(Neuron input, Neuron output) {
@@ -20,8 +22,14 @@ public class Synapse {
     }
 
     // Passes the value from input to output while multiplying value by weight
-    public void PassValue()
-    {
-        outputNeuron.value += inputNeuron.value * weight;
+    public void PassValue() {
+        passedValue = inputNeuron.activatedSum * weight;
+        outputNeuron.sum += passedValue;
+        outputNeuron.sumOfInputWeights += weight;
+    }
+
+    public void PassError(float errorValue, float learningRate) {
+        inputNeuron.error += weight / outputNeuron.sumOfInputWeights * outputNeuron.error;
+        weight -= learningRate * errorValue * outputNeuron.activatedSumDerived * outputNeuron.sum;
     }
 }

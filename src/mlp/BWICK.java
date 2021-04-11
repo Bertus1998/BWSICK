@@ -6,7 +6,8 @@ public class BWICK {
     {
         Network network = new Network(3, 4, 2, 1);
         network.SetInputData(new float[] {1, 2, 3});
-        network.Run();
+        network.RunForward();
+        network.RunBackward();
 
         System.out.println("KONIEC");
     }

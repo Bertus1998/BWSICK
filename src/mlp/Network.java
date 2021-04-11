@@ -2,10 +2,16 @@ package mlp;
 
 public class Network {
 
-    private Neuron[][] network;
+    private final Neuron[][] network;
+    int outputLayerNumber;
+    float learningRate = 0.001f;
 
     // Constructor, creates neurons and synapses
     public Network(int... amountOfNeurons) {
+
+        // Set number of output layer
+        outputLayerNumber = amountOfNeurons.length - 1;
+
         // Fill array with neurons' objects
         network = new Neuron[amountOfNeurons.length][];
         for (int i = 0; i < network.length; i++)
@@ -37,27 +43,39 @@ public class Network {
         }
 
         for (int  i = 0; i < inputData.length; i++) {
-            network[0][i].value = inputData[i];
+            network[0][i].sum = inputData[i];
         }
     }
-    public void Run() {
+    public void RunForward() {
 
-        int outputLayerNumber = network.length - 1;
-
-        for (int neuron = 0; neuron < network[0].length; neuron++) {
-            network[0][neuron].PassValue();
+        for (Neuron n : network[0]) {
+            n.PassValue();
         }
 
         for (int layer = 1; layer < outputLayerNumber; layer++) {
-            for (int neuron = 0; neuron < network[layer].length; neuron++) {
-                network[layer][neuron].ApplyBias();
-                network[layer][neuron].ActivateValue();
-                network[layer][neuron].PassValue();
+            for (Neuron n : network[layer]) {
+                n.ApplyBias();
+                n.ActivateValue();
+                n.PassValue();
             }
         }
 
-        for (int neuron = 0; neuron < network[outputLayerNumber].length; neuron++) {
-            network[outputLayerNumber][neuron].ActivateValue();
+        for (Neuron n : network[outputLayerNumber]) {
+            n.ActivateValue();
         }
+
+    }
+    public void RunBackward() {
+        for (Neuron n : network[outputLayerNumber]) {
+            n.CalculateError_Output(1);         // TODO - add custom expected value
+        }
+
+        for (int layer = outputLayerNumber - 1; layer > 1; layer--) {
+            for (Neuron n : network[layer]) {
+                n.PassError(learningRate);
+            }
+        }
+
+        // TODO - Reset network after one cycle (set errors and weight sums back to zero to prepare for next iteration)
     }
 }
