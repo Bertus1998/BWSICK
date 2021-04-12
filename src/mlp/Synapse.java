@@ -8,7 +8,6 @@ public class Synapse {
     public Neuron outputNeuron;     // Reference to neuron data has to be passed to
     public float weight;            // Weight of the synapse
     public float passedValue;       // Value that was passed
-    public float error;             // error
 
     // Constructor that initiates weight with random value and assigns values to input and output
     public Synapse(Neuron input, Neuron output) {

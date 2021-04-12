@@ -65,17 +65,26 @@ public class Network {
         }
 
     }
-    public void RunBackward() {
+    public void RunBackward(float[] expectedValues) {
+
+        // Calculate error comparing results with expected values
+        int i = 0;
         for (Neuron n : network[outputLayerNumber]) {
-            n.CalculateError_Output(1);         // TODO - add custom expected value
+            n.CalculateError_Output(expectedValues[i++]);
         }
 
-        for (int layer = outputLayerNumber - 1; layer > 1; layer--) {
+        // Pass errors to the hidden layers
+        for (int layer = outputLayerNumber - 1; layer >= 1; layer--) {
             for (Neuron n : network[layer]) {
                 n.PassError(learningRate);
             }
         }
 
-        // TODO - Reset network after one cycle (set errors and weight sums back to zero to prepare for next iteration)
+        // Reset network and prepare it for next iteration
+        for (Neuron[] l : network) {
+            for (Neuron n : l) {
+                n.ResetNeuron();
+            }
+        }
     }
 }

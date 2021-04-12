@@ -55,6 +55,10 @@ public class Neuron {
             s.PassError(error, learningRate);
         }
     }
+    public void ResetNeuron() {
+        sum = 0;
+        sumOfInputWeights = 0;
+    }
 
 
     // ACTIVATION FUNCTIONS
