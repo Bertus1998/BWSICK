@@ -49,6 +49,9 @@ public class Neuron {
     public void CalculateError_Output(float expectedValue) {
         activatedSumDerived = activatedSum * (1 - activatedSum);
         error = (expectedValue - activatedSum) * activatedSumDerived;
+        System.out.println("ExcpectedValue :"+expectedValue);
+        System.out.println("ActivatedSum"+activatedSum);
+        System.out.println("ActivatedSumDerived:"+activatedSumDerived);
     }
     public void PassError(float learningRate) {
         for (Synapse s : prevNeurons) {
