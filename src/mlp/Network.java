@@ -71,6 +71,7 @@ public class Network {
         int i = 0;
         for (Neuron n : network[outputLayerNumber]) {
             n.CalculateError_Output(expectedValues[i++]);
+            n.PassError(learningRate);
         }
 
         // Pass errors to the hidden layers
@@ -79,8 +80,8 @@ public class Network {
                 n.PassError(learningRate);
             }
         }
-
-        // Reset network and prepare it for next iteration
+    }
+    public void ResetNetwork() {
         for (Neuron[] l : network) {
             for (Neuron n : l) {
                 n.ResetNeuron();

@@ -28,7 +28,7 @@ public class Synapse {
     }
 
     public void PassError(float errorValue, float learningRate) {
-        inputNeuron.error += weight / outputNeuron.sumOfInputWeights * outputNeuron.error;
+        inputNeuron.error += (weight / outputNeuron.sumOfInputWeights) * outputNeuron.error;
         weight -= learningRate * errorValue * outputNeuron.activatedSumDerived * outputNeuron.sum;
     }
 }
