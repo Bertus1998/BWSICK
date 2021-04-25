@@ -31,6 +31,9 @@ public class Neuron {
     public void ApplyBias() {
         biasedSum = sum + bias;
     }
+    public void DontApplyBias() {
+        biasedSum = sum;
+    }
     // Activates value
     public void ActivateValue() {
         activatedSum = Sigmoid();
@@ -49,10 +52,6 @@ public class Neuron {
     public void CalculateError_Output(float expectedValue) {
         activatedSumDerived = activatedSum * (1 - activatedSum);
         error = (expectedValue - activatedSum) * activatedSumDerived;
-        System.out.println("ExpectedValue: " + expectedValue);
-        System.out.println("ActivatedSum: " + activatedSum);
-        System.out.println("ActivatedSumDerived: " + activatedSumDerived);
-        System.out.println("Error: " + error);
     }
     public void PassError(float learningRate) {
         for (Synapse s : prevNeurons) {

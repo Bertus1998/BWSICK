@@ -48,11 +48,7 @@ public class Network {
     }
     public void RunForward() {
 
-        for (Neuron n : network[0]) {
-            n.PassValue();
-        }
-
-        for (int layer = 1; layer < outputLayerNumber; layer++) {
+        for (int layer = 0; layer < outputLayerNumber; layer++) {
             for (Neuron n : network[layer]) {
                 n.ApplyBias();
                 n.ActivateValue();
@@ -61,6 +57,7 @@ public class Network {
         }
 
         for (Neuron n : network[outputLayerNumber]) {
+            n.DontApplyBias();
             n.ActivateValue();
         }
 
@@ -80,6 +77,17 @@ public class Network {
                 n.PassError(learningRate);
             }
         }
+    }
+    public int GetResult() {
+        int maxNeuron = -1;
+        float maxValue = 0;
+        for (int i = 0; i < network[outputLayerNumber].length; i++) {
+            if (network[outputLayerNumber][i].activatedSum > maxValue) {
+                maxValue = network[outputLayerNumber][i].activatedSum;
+                maxNeuron = i;
+            }
+        }
+        return maxNeuron;
     }
     public void ResetNetwork() {
         for (Neuron[] l : network) {

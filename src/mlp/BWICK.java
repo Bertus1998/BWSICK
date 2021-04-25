@@ -1,11 +1,15 @@
 package mlp;
 
+import sun.nio.ch.Net;
+
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BWICK {
@@ -20,6 +24,53 @@ public class BWICK {
         DataBase dataBaseOfPhotos = DataBase.loadDataBase(folderOfImages);
         DataBase dataBaseOfSound = DataBase.loadDataBase(folderOfSound);
 
+        ArrayList<Iris> irises;
+        try {
+            //irises = Iris.GetIrises("C:\\Users\\Dominik\\Desktop\\BWSICK\\DataBase\\Irises\\iris.data");
+            irises = Iris.GetIrises("C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK\\DataBase\\Irises\\iris.data");
+        } catch (IOException e)
+        {
+            System.out.println("Nie znaleziono pliku");
+            return;
+        }
+
+        Network irisNetwork = new Network(4, 5, 5, 3);
+
+        // Train network
+        for (int i = 0; i < 100 ; i++) {
+
+            Iris iris = irises.get(i);
+            irisNetwork.SetInputData(iris.GetInput());
+            irisNetwork.RunForward();
+            irisNetwork.RunBackward(iris.GetOutput());
+            irisNetwork.ResetNetwork();
+        }
+
+        // Test network;
+        int correct = 0;
+        int incorrect = 0;
+        for (int i = 100; i < 150; i++) {
+
+            Iris iris = irises.get(i);
+            irisNetwork.SetInputData(iris.GetInput());
+            irisNetwork.RunForward();
+
+            int result = irisNetwork.GetResult();
+            System.out.println("Result: " + result);
+
+            if (iris.GetOutput()[result] == 1) {
+                correct++;
+            } else {
+                incorrect++;
+            }
+
+            irisNetwork.ResetNetwork();
+        }
+
+        System.out.println("Correct: " + correct + " | Incorrect: " + incorrect);
+
+
+        /*
         //On input amount of pixels, on output amount of possible people (625)
         Network networkForPhotos = new Network(640*480, 50, 50, 625);
         float[] answers = new float[625];
@@ -46,6 +97,7 @@ public class BWICK {
         //network.SetInputData(new float[] {1, 2, 3});
         //network.RunForward();
         //network.RunBackward(new float[] {1, 1, 1});
+         */
     }
     private static float[] ImageToGrayScaleArray(BufferedImage image) {
 
