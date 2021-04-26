@@ -13,13 +13,19 @@ public class Iris {
     float v1, v2, v3, v4;
     int type;
 
-    public float[] GetInput() {
-        return new float[] {v1, v2, v3, v4};
+    public double[] GetInput() {
+        return new double[] {v1, v2, v3, v4};
     }
-    public float[] GetOutput() {
-        float[] res = new float[] {0, 0, 0};
+    public double[] GetInputBiased() {
+        return new double[] {v1, v2, v3, v4, 0};
+    }
+    public double[] GetOutput() {
+        double[] res = new double[] {0, 0, 0};
         res[type] = 1;
         return res;
+    }
+    public int GetType() {
+        return type;
     }
 
     public static ArrayList<Iris> GetIrises(String path) throws IOException {

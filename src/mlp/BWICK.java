@@ -2,20 +2,76 @@ package mlp;
 
 import sun.nio.ch.Net;
 
-import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class BWICK {
 
-    public static void main(String[] args)
-    {
+    static DataBase dataBaseOfPhotos;
+    static DataBase dataBaseOfSound;
+    static ArrayList<Iris> irises;
+    static boolean networkFromFile = true;
+
+    public static void main(String[] args) {
+        //LoadData();
+
+        String pathToFile = "trainedNetwork_Irises.mlp";
+        Network irisNetwork;
+
+        while (true) {
+
+            LoadData();
+
+            //irisNetwork = TrainNetwork(new Network(4, 5, 3), irises);
+            irisNetwork = Network.CreateFromFile(pathToFile);
+
+
+            int correct = 0;
+            int iStart = 0;
+            int iEnd = 150;
+
+            for (int i = iStart; i < iEnd; i++) {
+
+                Iris iris = irises.get(i);
+                int guess = irisNetwork.Predict(iris.GetInput());
+
+                if (iris.GetOutput()[guess] == 1) {
+                    correct++;
+                }
+            }
+            System.out.println("RESULT: " + correct + " from " + (iEnd - iStart) + " | " + (correct * 100 / (iEnd - iStart)) + "%");
+
+            if (correct == 50 && !networkFromFile) {
+                irisNetwork.SaveToFile(pathToFile);
+                break;
+            }
+
+            if (networkFromFile) {
+                break;
+            }
+        }
+    }
+
+
+    private static Network TrainNetwork(Network n, List<Iris> irises) {
+        for (int e = 0; e < 1000; e++) {
+            for (int i = 0; i < 100; i++) {
+
+                Iris iris = irises.get(i);
+                double[] result = n.PropagateForward(iris.GetInput());
+                n.PropagateBackward(iris.GetInput(), iris.GetOutput(), result);
+            }
+        }
+        networkFromFile = false;
+        return n;
+    }
+
+    private static void LoadData() {
+
         // Load files
         //File folderOfImages = new File("C:\\Users\\Dominik\\Desktop\\BWSICK\\DataBase\\BD_zdjecia\\train");
         //File folderOfSound = new File("C:\\Users\\Dominik\\Desktop\\BWSICK\\DataBase\\BD_dzwiek\\train");
@@ -24,7 +80,6 @@ public class BWICK {
         DataBase dataBaseOfPhotos = DataBase.loadDataBase(folderOfImages);
         DataBase dataBaseOfSound = DataBase.loadDataBase(folderOfSound);
 
-        ArrayList<Iris> irises;
         try {
             //irises = Iris.GetIrises("C:\\Users\\Dominik\\Desktop\\BWSICK\\DataBase\\Irises\\iris.data");
             irises = Iris.GetIrises("C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK\\DataBase\\Irises\\iris.data");
@@ -33,72 +88,8 @@ public class BWICK {
             System.out.println("Nie znaleziono pliku");
             return;
         }
-
-        Network irisNetwork = new Network(4, 5, 5, 3);
-
-        // Train network
-        for (int i = 0; i < 100 ; i++) {
-
-            Iris iris = irises.get(i);
-            irisNetwork.SetInputData(iris.GetInput());
-            irisNetwork.RunForward();
-            irisNetwork.RunBackward(iris.GetOutput());
-            irisNetwork.ResetNetwork();
-        }
-
-        // Test network;
-        int correct = 0;
-        int incorrect = 0;
-        for (int i = 100; i < 150; i++) {
-
-            Iris iris = irises.get(i);
-            irisNetwork.SetInputData(iris.GetInput());
-            irisNetwork.RunForward();
-
-            int result = irisNetwork.GetResult();
-            System.out.println("Result: " + result);
-
-            if (iris.GetOutput()[result] == 1) {
-                correct++;
-            } else {
-                incorrect++;
-            }
-
-            irisNetwork.ResetNetwork();
-        }
-
-        System.out.println("Correct: " + correct + " | Incorrect: " + incorrect);
-
-
-        /*
-        //On input amount of pixels, on output amount of possible people (625)
-        Network networkForPhotos = new Network(640*480, 50, 50, 625);
-        float[] answers = new float[625];
-        Arrays.fill(answers,0f);
-        for(int i =0;i<100; i++) {
-
-            answers[i] = 1;
-            BufferedImage img = null;
-            try {
-                img = ImageIO.read(dataBaseOfPhotos.listOfFiles.get(i));
-                // System.out.println(ImageToGrayScaleArray(img).toString());
-                networkForPhotos.SetInputData(ImageToGrayScaleArray(img));
-                networkForPhotos.RunForward();
-                networkForPhotos.RunBackward(answers);
-                networkForPhotos.ResetNetwork();
-
-            } catch (IOException e) {
-                System.out.println("Image was not loaded. Index: " + i);
-            }
-            answers[i] = 0;
-        }
-        //On input .. on output amount of possible gender, (2) <? XD
-        //Network networkForSound = new Network(640*480, 4, 2, 2);
-        //network.SetInputData(new float[] {1, 2, 3});
-        //network.RunForward();
-        //network.RunBackward(new float[] {1, 1, 1});
-         */
     }
+
     private static float[] ImageToGrayScaleArray(BufferedImage image) {
 
         final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
