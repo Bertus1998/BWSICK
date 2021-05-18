@@ -1,6 +1,7 @@
 from Layer import *
 from Neuron import *
 import numpy as np
+import pickle
 
 
 class Network:
@@ -80,7 +81,7 @@ class Network:
                 max_index = i
                 max_value = output_values[i]
 
-        return max_index
+        return max_index, max_value
 
     @staticmethod
     def evaluate(value):
@@ -88,4 +89,32 @@ class Network:
 
     @staticmethod
     def evaluate_derivative(value):
-        return value * (1 - value)
+        return Network.evaluate(value) * (1 - Network.evaluate(value))
+
+    def save_to_file(self, filename):
+
+        file = open(filename, mode='w')
+        file.write(str(self))
+        file.close()
+
+    @staticmethod
+    def load_from_file(filepath):
+
+        file = open(filepath, mode='r')
+        content = file.read()
+        file.close()
+        content = content.split('l')[1:]
+        n = Network([0])
+        n.layers = []
+        for c in content:
+            n.layers.append(Layer.from_file(c))
+        return n
+
+    def __str__(self):
+        res = ''
+        for l in self.layers:
+            res += str(l)
+        return res
+
+
+
