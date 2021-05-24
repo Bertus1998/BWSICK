@@ -76,7 +76,7 @@ def network_faces(path_to_network=None):
         network = Network([25, 10, 10, 50])
         train_network(network, landmark_list, epochs=1000)
     else:
-        network = Network.load_from_file('Networks\\Irises\\Network_Iris_' + str(path_to_network))
+        network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
     landmark_list2, person_list2 = Faces.loadImagesAndLandmarksExtract("xd")
     result = test_network(network, landmark_list2)
     network.save_to_file('Networks\\Faces\\Network_Faces_' + str(result))
