@@ -84,5 +84,5 @@ def network_faces(path_to_network=None):
 
 
 # network_iris()
-# network_sound(100)
-network_faces()
+network_sound()
+# network_faces()
