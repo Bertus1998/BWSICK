@@ -2,6 +2,10 @@ from DataSets.Iris import *
 from DataSets.Sound import *
 from DataSets.Faces import *
 from Network import *
+import numpy
+import cv2
+import sys
+import dlib
 
 
 def train_network(network, data_set, epochs=1000):
@@ -70,18 +74,42 @@ def network_sound(path_to_network=None):
     network.save_to_file('Networks\\Sounds\\Network_Sound_' + str(result))
 
 
-def network_faces(path_to_network=None):
-    if path_to_network is None:
-        landmark_list, person_list = Faces.loadImagesAndLandmarksExtract()
-        network = Network([25, 10, 10, 50])
-        train_network(network, landmark_list, epochs=1000)
+def network_faces(path_to_network=None, value1=None, value2=None, faces_training_list=None):
+    if value1 is None:
+        if path_to_network is None:
+
+            network = Network([17, 10, 51])
+            train_network(network, faces_training_list, epochs=10)
+        else:
+            network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
+        faces_testing_list = Face.loadImagesAndLandmarksExtract("xd")
+        result = test_network(network, faces_testing_list)
+        network.save_to_file('Networks\\Faces\\Network_Faces_' + str(result))
     else:
-        network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
-    landmark_list2, person_list2 = Faces.loadImagesAndLandmarksExtract("xd")
-    result = test_network(network, landmark_list2)
-    network.save_to_file('Networks\\Faces\\Network_Faces_' + str(result))
+        if path_to_network is None:
+            network_structure = numpy.zeros(value1 + 2)
+            network_structure[0] = 25
+            network_structure[len(network_structure) - 1] = 52
+            for i in range(1, len(network_structure) - 1):
+                network_structure[i] = value2
+            network_structure = network_structure.astype(int)
+            print(network_structure)
+            network = Network(network_structure)
+            train_network(network, faces_training_list, epochs=5000)
+        else:
+            network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
+        faces_testing_list = Face.loadImagesAndLandmarksExtract("xd")
+        result = test_network(network, faces_testing_list)
+        network.save_to_file('Networks\\Faces\\Network_Faces_' + str(result))
 
 
 # network_iris()
 # network_sound(100)
-network_faces()
+faces_training_list = Face.loadImagesAndLandmarksExtract()
+# for i in faces_training_list:
+# print(i.name)
+#  print(i.landmarks)
+#for i in range(5, 30):
+    #for j in range(5, 20):
+network_faces(value1=3, value2=5, faces_training_list=faces_training_list)
+# network_faces(value1=10, value2=10, faces_training_list=faces_training_list)
