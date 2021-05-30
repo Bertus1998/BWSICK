@@ -1,6 +1,6 @@
 from DataSets.Iris import *
 from DataSets.Sound import *
-from DataSets.Faces import *
+from DataSets.Face import *
 from Network import *
 
 
@@ -49,36 +49,37 @@ def network_iris(path_to_network=None):
 
 
 def network_sound(path_to_network=None):
-    # sounds_train = Sound.extract_and_save('C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\train', 'C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\train_extracted')
-    # sounds_test = Sound.extract_and_save('C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\test', 'C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\test_extracted')
-    sounds_train = Sound.from_file(
-        'C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\train_extracted')
-    sounds_test = Sound.from_file(
-        'C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\test_extracted')
-    # sounds_train = Sound.get_sounds('C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\train')
-    # sounds_test = Sound.get_sounds('C:\\Users\\Adam\\Desktop\\Studia\\1 Semestr\\Biometryczne wspomaganie interakcji człowiek-komputer\\BWICK_v2\\DataBase\\BD_dzwiek\\test')
-
-    random.shuffle(sounds_train)
-    random.shuffle(sounds_test)
-
     if path_to_network is None:
+        # sounds_train = Sound.extract_and_save('DataBase\\BD_dzwiek\\train', 'DataBase\\BD_dzwiek\\train_extracted')
+        sounds_train = Sound.from_file('DataBase\\BD_dzwiek\\train_extracted')
+        # sounds_train = Sound.get_sounds('DataBase\\BD_dzwiek\\train')
+        random.shuffle(sounds_train)
+
         network = Network([128, 10, 1])
         train_network(network, sounds_train, epochs=100)
     else:
         network = Network.load_from_file('Networks\\Sounds\\Network_Sound_' + str(path_to_network))
+
+    # sounds_test = Sound.extract_and_save('DataBase\\BD_dzwiek\\test', 'DataBase\\BD_dzwiek\\test_extracted')
+    sounds_test = Sound.from_file('DataBase\\BD_dzwiek\\test_extracted')
+    # sounds_test = Sound.get_sounds('CDataBase\\BD_dzwiek\\test')
+    random.shuffle(sounds_test)
+
     result = test_network(network, sounds_test, mode01=True)
     network.save_to_file('Networks\\Sounds\\Network_Sound_' + str(result))
 
 
 def network_faces(path_to_network=None):
+    faces_train = Face.get_faces('DataBase\\BD_zdjecia\\test')
+
     if path_to_network is None:
-        landmark_list, person_list = Faces.loadImagesAndLandmarksExtract()
-        network = Network([25, 10, 10, 50])
-        train_network(network, landmark_list, epochs=1000)
+        network = Network([25, 25, 25, 276])
+        train_network(network, faces_train, epochs=1000)
     else:
         network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
-    landmark_list2, person_list2 = Faces.loadImagesAndLandmarksExtract("xd")
-    result = test_network(network, landmark_list2)
+
+    faces_test = Face.get_faces('DataBase\\BD_zdjecia\\train')
+    result = test_network(network, faces_test)
     network.save_to_file('Networks\\Faces\\Network_Faces_' + str(result))
 
 
