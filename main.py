@@ -88,14 +88,14 @@ def network_faces(path_to_network=None, value1=None, value2=None, faces_training
     else:
         if path_to_network is None:
             network_structure = numpy.zeros(value1 + 2)
-            network_structure[0] = 25
+            network_structure[0] = 42
             network_structure[len(network_structure) - 1] = 52
             for i in range(1, len(network_structure) - 1):
                 network_structure[i] = value2
             network_structure = network_structure.astype(int)
             print(network_structure)
             network = Network(network_structure)
-            train_network(network, faces_training_list, epochs=5000)
+            train_network(network, faces_training_list, epochs=2000)
         else:
             network = Network.load_from_file('Networks\\Faces\\Network_Faces_' + str(path_to_network))
         faces_testing_list = Face.loadImagesAndLandmarksExtract("xd")
@@ -111,5 +111,5 @@ faces_training_list = Face.loadImagesAndLandmarksExtract()
 #  print(i.landmarks)
 #for i in range(5, 30):
     #for j in range(5, 20):
-network_faces(value1=3, value2=5, faces_training_list=faces_training_list)
+network_faces(value1=5, value2=10, faces_training_list=faces_training_list)
 # network_faces(value1=10, value2=10, faces_training_list=faces_training_list)
