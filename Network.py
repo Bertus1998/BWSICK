@@ -66,6 +66,7 @@ class Network:
                 self.layers[layer + 1].neurons[nn].bias += self.learning_rate * self.layers[layer + 1].neurons[nn].delta
 
         error = 0
+
         for n in range(len(expected)):
             error += np.abs(expected[n] - recieved[n])
 
